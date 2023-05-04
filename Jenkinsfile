@@ -4,9 +4,12 @@ pipeline {
     stages {
         stage('Test OpenShift Cluster Connection') {
             steps {
-                openshift.withCluster() {
-                    sh "oc project"
+                script {
+                    openshift.withCluster() {
+                        sh "oc project"
+                    }
                 }
+                
             }
         }
     }
