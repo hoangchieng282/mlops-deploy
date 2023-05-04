@@ -18,7 +18,7 @@ pipeline {
             steps {
                 script {
                     openshift.withCluster() {
-                        sh "oc project"
+                        sh "oc whoami"
                     }
                 }
                 
