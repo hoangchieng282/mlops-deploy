@@ -1,14 +1,11 @@
 pipeline {
     agent any
+    
     stages {
-        stage('Test connection to OpenShift cluster') {
+        stage('Test OpenShift Cluster Connection') {
             steps {
-                withOpenShift(
-                    serverUrl: 'https://api.sandbox-m3.1530.p1.openshiftapps.com:6443',
-                    project: 'gramphoang-dev',
-                    credentialsId: 'jenkins-sa-key'
-                ) {
-                    sh 'oc whoami'
+                openshift.withCluster() {
+                    sh "oc project"
                 }
             }
         }
