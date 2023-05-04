@@ -5,8 +5,8 @@ pipeline {
         stage('Install oc') {
             steps {
                 sh 'curl -L https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux.tar.gz | tar xvz'
-                sh 'sudo mv ./oc /usr/local/bin/oc'
-                sh 'sudo mv ./kubectl /usr/local/bin/kubectl'
+                sh 'mv ./oc /usr/local/bin/oc'
+                sh 'mv ./kubectl /usr/local/bin/kubectl'
                 sh 'oc version'
             }
             }
