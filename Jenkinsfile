@@ -2,9 +2,9 @@ pipeline {
     agent any
     
     environment {
-        KUBECONFIG = "/var/jenkins_home/config"
+        KUBECONFIG = "/var/jenkins_home/my-kubeconfig"
     }
-    
+
     stages {
         // stage('Install oc') {
         //     steps {
