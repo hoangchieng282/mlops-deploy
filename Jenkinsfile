@@ -18,7 +18,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([
-                        secretText(credentialsId: 'okd-token', variable: 'TOKEN')
+                        string(credentialsId: 'okd-token', variable: 'TOKEN')
                     ]) {
                         openshift.withCluster('mlops-okd-cluster') {
                             openshift.withClient(token: "$TOKEN") {
