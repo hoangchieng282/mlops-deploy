@@ -17,8 +17,16 @@ pipeline {
         stage('Test OpenShift Cluster Connection') {
             steps {
                 script {
-                    openshift.withCluster('mlops-okd-cluster') {
-                        sh "oc whoami"
+                    withCredentials([
+                        openshiftToken(credentialsId: 'admin-token', variable: 'TOKEN')
+                    ]){
+                        openshift.withCluster() {
+                            openshift.withClient(token: "$TOKEN") {
+                            // Use the OpenShift client
+                            sh "oc whoami"
+                            // Additional steps
+                            }
+                        }
                     }
                 }
                 
