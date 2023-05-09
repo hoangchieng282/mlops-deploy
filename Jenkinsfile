@@ -17,7 +17,7 @@ pipeline {
         stage('Test OpenShift Cluster Connection') {
             steps {
                 script {
-                    openshift.withCluster() {
+                    openshift.withCluster('mlops-okd-cluster') {
                         sh "oc whoami"
                     }
                 }
