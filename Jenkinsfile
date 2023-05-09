@@ -20,7 +20,7 @@ pipeline {
                     withCredentials([
                         string(credentialsId: 'admin-token', variable: 'TOKEN')
                     ]) {
-                    openshift.withCluster('my-openshift-cluster') {
+                    openshift.withCluster('mlops-okd-cluster') {
                         openshift.withClient(token: "$TOKEN") {
                         // Use the OpenShift client
                         sh "oc whoami"
