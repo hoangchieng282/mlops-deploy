@@ -21,7 +21,7 @@ pipeline {
                         string(credentialsId: 'okd-token', variable: 'TOKEN')
                     ]) {
                         openshift.withCluster('mlops-okd-cluster') {
-                            openshift.withClient(token: "${TOKEN}") {
+                            openshift.withClient(token: env.TOKEN) {
                             // Use the OpenShift client
                             sh "oc whoami"
                             // Additional steps
