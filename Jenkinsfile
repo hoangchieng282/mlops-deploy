@@ -19,14 +19,14 @@ pipeline {
                 script {
                     withCredentials([
                         string(credentialsId: 'admin-token', variable: 'TOKEN')
-                    ]){
-                        openshift.withCluster() {
-                            openshift.withClient(token: "$TOKEN") {
-                            // Use the OpenShift client
-                            sh "oc whoami"
-                            // Additional steps
-                            }
+                    ]) {
+                    openshift.withCluster('my-openshift-cluster') {
+                        openshift.withClient(token: "$TOKEN") {
+                        // Use the OpenShift client
+                        sh "oc whoami"
+                        // Additional steps
                         }
+                    }
                     }
                 }
                 
