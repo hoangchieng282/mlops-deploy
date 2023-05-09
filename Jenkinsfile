@@ -18,7 +18,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([
-                        openshiftToken(credentialsId: 'admin-token', variable: 'TOKEN')
+                        string(credentialsId: 'admin-token', variable: 'TOKEN')
                     ]){
                         openshift.withCluster() {
                             openshift.withClient(token: "$TOKEN") {
