@@ -6,9 +6,9 @@ pipeline {
         }
     }
 
-    environment {
-        KUBECONFIG = "/var/jenkins_home/my-kubeconfig"
-    }
+    // environment {
+    //     KUBECONFIG = "/var/jenkins_home/my-kubeconfig"
+    // }
 
     stages {
         // stage('Install oc') {
@@ -23,10 +23,10 @@ pipeline {
             steps {
                 script {
                    
-                        openshift.withCluster('mlops-okd-cluster') {
+                        openshift.withCluster() {
 
                             // Use the OpenShift client
-                            sh "oc whoami"
+                            sh "oc version"
                         
                         }
                 }
