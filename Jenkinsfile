@@ -23,7 +23,7 @@ pipeline {
             steps {
                 script {
                    
-                        openshift.withCluster('mlops-cluster') {
+                        openshift.withCluster('mlops-cluster','jenkins-sa-token') {
 
                             // Use the OpenShift client
                             sh "oc whoami"
