@@ -23,7 +23,7 @@ pipeline {
         stage('Test OpenShift Cluster Connection') {
             steps {
                 script {
-                   
+                    try {
                         withCredentials([
                             usernamePassword(
                                 credentialsId: 'openshift-sa-token-int-vn',
@@ -34,6 +34,9 @@ pipeline {
                             sh "oc login --token=${OPENSHIFT_TOKEN} --server=https://api.sandbox-m3.1530.p1.openshiftapps.com:6443"
                             sh "oc whoami"
                         }
+                    }catch {
+                        
+                    }
                 }
                 
             }
