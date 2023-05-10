@@ -1,6 +1,11 @@
 pipeline {
-    agent any
-    
+    agent {
+        docker {
+            // image 'ultralytics/yolov5:latest'
+            image 'openshift/origin-cli'
+        }
+    }
+
     environment {
         KUBECONFIG = "/var/jenkins_home/my-kubeconfig"
     }
