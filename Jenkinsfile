@@ -23,10 +23,10 @@ pipeline {
             steps {
                 script {
                    
-                        openshift.withCluster() {
+                        openshift.withCluster('mlops-cluster') {
 
                             // Use the OpenShift client
-                            sh "oc version"
+                            sh "oc whoami"
                         
                         }
                 }
