@@ -26,16 +26,16 @@ pipeline {
                     try {
                         withCredentials([
                             usernamePassword(
-                                credentialsId: 'openshift-sa-token-int-vn',
+                                credentialsId: 'okd-cluster-admin',
                                 usernameVariable: 'USERNAME',
-                                passwordVariable: 'OPENSHIFT_TOKEN'
+                                passwordVariable: 'PASSWORD'
                             )
                         ]){
-                            sh "oc login --token=${OPENSHIFT_TOKEN} --server=https://api.sandbox-m3.1530.p1.openshiftapps.com:6443"
+                            sh "oc login -u=${USERNAME} -p=${PASSWORD} --server=https://api.sandbox-m3.1530.p1.openshiftapps.com:6443"
                             sh "oc whoami"
                         }
                     }catch {
-                        
+
                     }
                 }
                 
