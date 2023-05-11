@@ -14,6 +14,7 @@ pipeline {
     environment {
         IMAGE_TO_DEPLOY="mlops-backend:${params.IMAGE_NAME}"
         DOCKER_REPO="mlops-docker-images"
+        KUBECONFIG='/tmp'
     }
 
 
