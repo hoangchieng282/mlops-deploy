@@ -48,7 +48,7 @@ pipeline {
         stage('Start deploy new image version'){
             steps {
                 script {
-                    sh "oc set dc/backend-mlops backend-mlops=artifactorymlopsk18.jfrog.io/${DOCKER_REPO}/${IMAGE_TO_DEPLOY}"
+                    sh "oc set image dc/backend-mlops backend-mlops=artifactorymlopsk18.jfrog.io/${DOCKER_REPO}/${IMAGE_TO_DEPLOY}"
                     sh "oc rollout status dc/backend-mlops"
                 }
             }
