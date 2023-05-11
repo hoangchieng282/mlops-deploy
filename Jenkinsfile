@@ -32,7 +32,7 @@ pipeline {
                             sh "oc login --token=${SA_JENKINS_TOKEN} --server=https://api.sandbox-m3.1530.p1.openshiftapps.com:6443"
                             sh "oc whoami"
                         }
-                    }catch {
+                    }catch(e) {
                         
                     }
                 }
