@@ -6,20 +6,18 @@ pipeline {
         }
     }
     
+    parameters {
+        string(name: 'IMAGE_NAME', description: 'The image to be deployed')
+        // string(name: 'VERSION', description: 'The version for the model')
+    }
     // agent any
-    // environment {
-    //     KUBECONFIG = "/var/jenkins_home/my-kubeconfig"
-    // }
+    environment {
+        IMAGE_TO_DEPLOY="mlops-backend:${params.IMAGE_NAME}"
+        DOCKER_REPO="mlops-docker-images"
+    }
+
 
     stages {
-        // stage('Install oc') {
-        //     steps {
-        //         sh 'curl -L https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux.tar.gz | tar xvz'
-        //         sh 'mv ./oc /usr/local/bin/oc'
-        //         sh 'mv ./kubectl /usr/local/bin/kubectl'
-        //         sh 'oc version'
-        //     }
-        //     }
         stage('Test OpenShift Cluster Connection') {
             steps {
                 script {
@@ -28,17 +26,31 @@ pipeline {
                             usernamePassword(
                                 credentialsId: 'okd-cluster-admin',
                                 usernameVariable: 'USERNAME',
-                                passwordVariable: 'PASSWORD'
+                                passwordVariable: 'SA_JENKINS_TOKEN'
                             )
                         ]){
-                            sh "oc login -u=${USERNAME} -p=${PASSWORD} --server=https://api.sandbox-m3.1530.p1.openshiftapps.com:6443"
+                            sh "oc login --token=${SA_JENKINS_TOKEN} --server=https://api.sandbox-m3.1530.p1.openshiftapps.com:6443"
                             sh "oc whoami"
                         }
                     }catch {
-
+                        
                     }
                 }
-                
+            }
+        }
+
+        stage('Precheck params'){
+            steps {
+                sh 'echo Hello'
+            }
+        }
+
+        stage('Start deploy new image version'){
+            steps {
+                script {
+                    sh "oc set dc/backend-mlops backend-mlops=artifactorymlopsk18.jfrog.io/${DOCKER_REPO}/${IMAGE_TO_DEPLOY}"
+                    sh "oc rollout status dc/backend-mlops"
+                }
             }
         }
     }
