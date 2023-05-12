@@ -24,14 +24,26 @@ pipeline {
         //OPENSHIFT info
         def KUBECONFIG='/tmp/kubeconfig.yaml'
         def OKD_SERVER="https://api.sandbox-m3.1530.p1.openshiftapps.com:6443"
-        // if(params.MODULE == 'front'){
-        //     IMAGE_TO_DEPLOY="mlops-frontend:${params.IMAGE_NAME}"
-        //     DEPLOYMENTCONFIG="frontend-mlops"
-        // }
+
     }
 
 
     stages {
+        stage('Precheck params'){
+            steps {
+                script {
+                    echo "Validating parameters..."
+                    if (!params.IMAGE_NAME?.trim()) {
+                        error "IMAGE_NAME is a mandatory parameter"
+                        return
+                    }
+                    if(params.MODULE == 'front'){
+                        IMAGE_TO_DEPLOY="mlops-frontend:${params.IMAGE_NAME}"
+                        DEPLOYMENTCONFIG="frontend-mlops"
+                    }
+                }
+            }
+        }
         stage('Test OpenShift Cluster Connection') {
             steps {
                 script {
@@ -53,15 +65,10 @@ pipeline {
             }
         }
 
-        stage('Precheck params'){
-            steps {
-                sh 'echo Hello'
-            }
-        }
-
         stage('Start deploy new image version'){
             steps {
                 script {
+                    sh "echo ${DEPLOYMENTCONFIG}"
                     sh "oc set image dc/${DEPLOYMENTCONFIG} ${DEPLOYMENTCONFIG}=artifactorymlopsk18.jfrog.io/${DOCKER_REPO}/${IMAGE_TO_DEPLOY}"
                     sh "oc rollout status dc/${DEPLOYMENTCONFIG}"
                 }
