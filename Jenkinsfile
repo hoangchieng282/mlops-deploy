@@ -24,10 +24,10 @@ pipeline {
         //OPENSHIFT info
         def KUBECONFIG='/tmp/kubeconfig.yaml'
         def OKD_SERVER="https://api.sandbox-m3.1530.p1.openshiftapps.com:6443"
-        if(params.MODULE == 'front'){
-            IMAGE_TO_DEPLOY="mlops-frontend:${params.IMAGE_NAME}"
-            DEPLOYMENTCONFIG="frontend-mlops"
-        }
+        // if(params.MODULE == 'front'){
+        //     IMAGE_TO_DEPLOY="mlops-frontend:${params.IMAGE_NAME}"
+        //     DEPLOYMENTCONFIG="frontend-mlops"
+        // }
     }
 
 
