@@ -1,3 +1,5 @@
+#!/usr/bin/env groovy
+
 pipeline {
     agent {
         docker {
@@ -15,7 +17,7 @@ pipeline {
     environment {
         //Basic image to be deploy
         def IMAGE_TO_DEPLOY="mlops-backend:${params.IMAGE_NAME}"
-        
+
         //Artifactory connect info
         def DEPLOYMENTCONFIG="backend-mlops"
         def DOCKER_REPO="mlops-docker-images"
