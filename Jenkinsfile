@@ -69,6 +69,16 @@ pipeline {
             steps {
                 script {
                     sh "echo ${DEPLOYMENTCONFIG}"
+                    def currentReplicas = sh (
+                        script: "oc get dc/${DEPLOYMENTCONFIG} -o jsonpath='{.spec.replicas}'",
+                        returnStdout: true
+                    ).trim()
+
+                    // Scale the deployment to 1 replica if the current count is 0
+                    if (currentReplicas == '0') {
+                        sh "oc scale --replicas=1 dc/${DEPLOYMENTCONFIG}"
+                    }
+
                     sh "oc set image dc/${DEPLOYMENTCONFIG} ${DEPLOYMENTCONFIG}=artifactorymlopsk18.jfrog.io/${DOCKER_REPO}/${IMAGE_TO_DEPLOY}"
                     sh "oc rollout status dc/${DEPLOYMENTCONFIG}"
                 }
