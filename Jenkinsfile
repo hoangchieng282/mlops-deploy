@@ -10,13 +10,13 @@ pipeline {
     
     parameters {
         string(name: 'IMAGE_NAME', description: 'The image to be deployed')
-        choice(name: 'MODULE', choices: ['front', 'back'], description: 'Select the module to be deployed')
+        choice(name: 'MODULE', choices: ['front', 'back'], description: 'Select the module to be deployed',defaultValue: 'back')
         // string(name: 'VERSION', description: 'The version for the model')
     }
     // agent any
     environment {
         //Basic image to be deploy
-        def IMAGE_TO_DEPLOY="mlops-backend:${params.IMAGE_NAME}"
+        def IMAGE_TO_DEPLOY="mlops-backend"
 
         //Artifactory connect info
         def DEPLOYMENTCONFIG="backend-mlops"
@@ -32,16 +32,26 @@ pipeline {
         stage('Precheck params'){
             steps {
                 script {
+                    withCredentials([
+                        usernamePassword(
+                            credentialsId: 'artifactory-chih',
+                            usernameVariable: 'USERNAME',
+                            passwordVariable: 'PASSWORD'
+                        )
+                    ]){
                     echo "Validating parameters..."
                     if (!params.IMAGE_NAME?.trim()) {
                         error "IMAGE_NAME is a mandatory parameter"
                         return
                     }
                     if(params.MODULE == 'front'){
-                        IMAGE_TO_DEPLOY="mlops-frontend:${params.IMAGE_NAME}"
+                        IMAGE_TO_DEPLOY="mlops-frontend"
                         DEPLOYMENTCONFIG="frontend-mlops"
                     }
-                }
+                    
+                    echo "Checking image version on Artifactory"
+                    sh "curl -u ${USERNAME}:${PASSWORD} -f -I https://${SERVER_URL}/artifactory/${DOCKER_REPO}/${IMAGE_TO_DEPLOY}/${params.IMAGE_NAME}/manifest.json"
+                } 
             }
         }
         stage('Test OpenShift Cluster Connection') {
@@ -79,7 +89,7 @@ pipeline {
                         sh "oc scale --replicas=1 dc/${DEPLOYMENTCONFIG}"
                     }
 
-                    sh "oc set image dc/${DEPLOYMENTCONFIG} ${DEPLOYMENTCONFIG}=artifactorymlopsk18.jfrog.io/${DOCKER_REPO}/${IMAGE_TO_DEPLOY}"
+                    sh "oc set image dc/${DEPLOYMENTCONFIG} ${DEPLOYMENTCONFIG}=artifactorymlopsk18.jfrog.io/${DOCKER_REPO}/${IMAGE_TO_DEPLOY}:${params.IMAGE_NAME}"
                     sh "oc rollout status dc/${DEPLOYMENTCONFIG}"
                 }
             }
