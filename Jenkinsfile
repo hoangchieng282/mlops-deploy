@@ -21,6 +21,7 @@ pipeline {
         //Artifactory connect info
         def DEPLOYMENTCONFIG="backend-mlops"
         def DOCKER_REPO="mlops-docker-images"
+        def SERVER_URL="artifactorymlopsk18.jfrog.io"
         //OPENSHIFT info
         def KUBECONFIG='/tmp/kubeconfig.yaml'
         def OKD_SERVER="https://api.sandbox-m3.1530.p1.openshiftapps.com:6443"
