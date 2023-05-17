@@ -51,7 +51,8 @@ pipeline {
                     
                     echo "Checking image version on Artifactory"
                     sh "curl -u ${USERNAME}:${PASSWORD} -f -I https://${SERVER_URL}/artifactory/${DOCKER_REPO}/${IMAGE_TO_DEPLOY}/${params.IMAGE_NAME}/manifest.json"
-                } 
+                    } 
+                }
             }
         }
         stage('Test OpenShift Cluster Connection') {
