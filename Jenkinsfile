@@ -21,7 +21,6 @@ pipeline {
         //Artifactory connect info
         def DEPLOYMENTCONFIG="backend-mlops"
         def DOCKER_REPO="mlops-docker-images"
-        def SERVER_URL="artifactorymlopsk18.jfrog.io"
         //OPENSHIFT info
         def KUBECONFIG='/tmp/kubeconfig.yaml'
         def OKD_SERVER="https://api.sandbox-m3.1530.p1.openshiftapps.com:6443"
@@ -51,7 +50,7 @@ pipeline {
                     }
                     
                     echo "Checking image version on Artifactory"
-                    sh "curl -u ${USERNAME}:${PASSWORD} -f -I https://${SERVER_URL}/artifactory/${DOCKER_REPO}/${IMAGE_TO_DEPLOY}/${params.IMAGE_NAME}/manifest.json"
+                    sh "curl -u ${USERNAME}:${PASSWORD} -f -I https://${env.SERVER_URL}/artifactory/${DOCKER_REPO}/${IMAGE_TO_DEPLOY}/${params.IMAGE_NAME}/manifest.json"
                     } 
                 }
             }
@@ -91,7 +90,7 @@ pipeline {
                         sh "oc scale --replicas=1 dc/${DEPLOYMENTCONFIG}"
                     }
 
-                    sh "oc set image dc/${DEPLOYMENTCONFIG} ${DEPLOYMENTCONFIG}=artifactorymlopsk18.jfrog.io/${DOCKER_REPO}/${IMAGE_TO_DEPLOY}:${params.IMAGE_NAME}"
+                    sh "oc set image dc/${DEPLOYMENTCONFIG} ${DEPLOYMENTCONFIG}=${env.SERVER_URL}/${DOCKER_REPO}/${IMAGE_TO_DEPLOY}:${params.IMAGE_NAME}"
                     sh "oc rollout status dc/${DEPLOYMENTCONFIG}"
                 }
             }
