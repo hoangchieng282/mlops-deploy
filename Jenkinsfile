@@ -10,7 +10,7 @@ pipeline {
     
     parameters {
         string(name: 'IMAGE_NAME', description: 'The image to be deployed')
-        choice(name: 'MODULE', choices: ['front', 'back'], description: 'Select the module to be deployed')
+        choice(name: 'MODULE', choices: ['back','front'], description: 'Select the module to be deployed')
         // string(name: 'VERSION', description: 'The version for the model')
     }
     // agent any
