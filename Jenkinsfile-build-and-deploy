@@ -1,0 +1,88 @@
+#!/usr/bin/env groovy
+
+
+def mlopsBackendBuild(String branch, String stageName, String MODEL_NAME, String MODEL_VERSION, String IMAGE_NAME, String stageResult = false, String propagate = true) {
+    try {
+        // Launch the job that builds iPension Suite
+        build job: branch,
+                parameters: [
+                    string(name: 'MODEL_NAME', value: MODEL_NAME),
+                    string(name: 'MODEL_VERSION', value: MODEL_VERSION),
+                    string(name: 'IMAGE_NAME', value: IMAGE_NAME)
+                ],
+                propagate: propagate
+        stageResult = true
+        return stageResult
+    }
+    catch (Exception e) {
+        unstable(stageName + " failed!")
+        currentBuild.result = 'FAILURE'
+        stageResult = false
+        return stageResult
+    }
+}
+
+def dockerBackendDeploy(String branch, String stageName, String IMAGE_NAME, String MODULE = "back", String stageResult = false, String propagate = true) {
+    try {
+        // Launch the job that builds iPension Suite
+        build job: branch,
+                parameters: [
+                    string(name: 'IMAGE_NAME', value: IMAGE_NAME),
+                    string(name: 'MODULE', value: MODULE)
+                ],
+                propagate: propagate
+        stageResult = true
+        return stageResult
+    }
+    catch (Exception e) {
+        unstable(stageName + " failed!")
+        currentBuild.result = 'FAILURE'
+        stageResult = false
+        return stageResult
+    }
+}
+
+pipeline {
+    agent any
+    
+    parameters {
+        string(name: 'MODEL_NAME', description: 'The name for the model')
+        string(name: 'MODEL_VERSION', description: 'The version for the model')
+        string(name: 'IMAGE_NAME', description: 'The version for the model',defaultValue: "currentDeploy")
+    }
+    
+    environment {
+        // Copy the Jenkins build number of Suite-Build job into a global iPension environment variable
+        IPENSION_BUILD_NUMBER = "${env.BUILD_NUMBER}"
+        
+        // Define default result
+        STAGE_RESULT_MLOPS_BUILD = false
+        // Define default job parameters
+        propagate = true
+    }
+    
+    stages {
+        stage('Build backend image') {
+            steps {
+                script {
+                    // (default) parameters in order: branch, stageName, stageResult = false, SKIP_TEST = false, SKIP_DOCKER_PUSH_CH = true, SKIP_DOCKER_PUSH_VN = false, propagate = true
+                    STAGE_RESULT_MLOPS_BUILD = mlopsBackendBuild("BUILD_BACKEND_IMAGE_MLOPS/main","${STAGE_NAME}","${params.MODEL_NAME}","${params.MODEL_VERSION}","${params.IMAGE_NAME}")
+                }
+            }
+        }
+
+        stage('Deploy backend image') {
+            when {
+                expression {
+                    return STAGE_RESULT_MLOPS_BUILD
+                }
+            }
+            steps {
+                script {
+                    // (default) parameters in order: branch, stageName, stageResult = false, SKIP_TEST = false, SKIP_DOCKER_PUSH_CH = true, SKIP_DOCKER_PUSH_VN = false, propagate = true
+                    dockerBackendDeploy("MLOPS_DEPLOY/main", "${STAGE_NAME}", "${params.IMAGE_NAME}")
+                }
+            }
+        }
+    }
+}
