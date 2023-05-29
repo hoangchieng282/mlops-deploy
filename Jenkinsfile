@@ -11,6 +11,7 @@ pipeline {
     parameters {
         string(name: 'IMAGE_NAME', description: 'The image to be deployed')
         choice(name: 'MODULE', choices: ['back','front'], description: 'Select the module to be deployed')
+        choice(name: 'ENV', choices: ['test','prod'], description: 'Select the environment to deploy')
         // string(name: 'VERSION', description: 'The version for the model')
     }
     // agent any
@@ -23,8 +24,8 @@ pipeline {
         def DOCKER_REPO="mlops-docker-images"
         //OPENSHIFT info
         def KUBECONFIG='/tmp/kubeconfig.yaml'
-        def OKD_SERVER="https://api.sandbox-m3.1530.p1.openshiftapps.com:6443"
-
+        def OKD_SERVER="${env.TESTING_OKD_ENV}"
+        def OKD_CRED_KEY='okd-cluster-admin'
     }
 
 
@@ -48,6 +49,10 @@ pipeline {
                         IMAGE_TO_DEPLOY="mlops-frontend"
                         DEPLOYMENTCONFIG="frontend-mlops"
                     }
+                    if(params.ENV == 'prod'){
+                        OKD_SERVER="${env.PROD_OKD_ENV}"
+                        OKD_CRED_KEY='okd-jenkins-token-prod'
+                    }
                     
                     echo "Checking image version on Artifactory"
                     sh "curl -u ${USERNAME}:${PASSWORD} -f -I https://${env.SERVER_URL}/artifactory/${DOCKER_REPO}/${IMAGE_TO_DEPLOY}/${params.IMAGE_NAME}/manifest.json"
@@ -58,10 +63,9 @@ pipeline {
         stage('Test OpenShift Cluster Connection') {
             steps {
                 script {
-                    try {
                         withCredentials([
                             usernamePassword(
-                                credentialsId: 'okd-cluster-admin',
+                                credentialsId: "${OKD_CRED_KEY}",
                                 usernameVariable: 'USERNAME',
                                 passwordVariable: 'SA_JENKINS_TOKEN'
                             )
@@ -69,9 +73,6 @@ pipeline {
                             sh "oc login --token=${SA_JENKINS_TOKEN} --server=${OKD_SERVER}"
                             sh "oc whoami"
                         }
-                    }catch(e) {
-                        
-                    }
                 }
             }
         }

@@ -2,7 +2,7 @@
 
 
 def mlopsBackendBuild(String branch, String stageName, String MODEL_NAME, String MODEL_VERSION, String IMAGE_NAME, String stageResult = false, String propagate = true) {
-    try {
+    // try {
         // Launch the job that builds iPension Suite
         build job: branch,
                 parameters: [
@@ -13,13 +13,13 @@ def mlopsBackendBuild(String branch, String stageName, String MODEL_NAME, String
                 propagate: propagate
         stageResult = true
         return stageResult
-    }
-    catch (Exception e) {
-        unstable(stageName + " failed!")
-        currentBuild.result = 'FAILURE'
-        stageResult = false
-        return stageResult
-    }
+    // }
+    // catch (Exception e) {
+    //     unstable(stageName + " failed!")
+    //     currentBuild.result = 'FAILURE'
+    //     stageResult = false
+    //     return stageResult
+    // }
 }
 
 def dockerBackendDeploy(String branch, String stageName, String IMAGE_NAME, String MODULE = "back", String stageResult = false, String propagate = true) {
