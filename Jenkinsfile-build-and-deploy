@@ -85,4 +85,13 @@ pipeline {
             }
         }
     }
+    post {
+        success {
+            sh "curl https://mlops-models-server-1gp6.vercel.app/jenkinsResult/success"
+        }
+
+        failure {
+            sh "curl https://mlops-models-server-1gp6.vercel.app/jenkinsResult/fail"
+        }
+    }
 }
